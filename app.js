@@ -28,7 +28,7 @@ require('./config/passport')(passport);
 mongoose.Promise = global.Promise
 
 // Connect to mongoose
-mongoose.connect('mongodb://localhost/vidjot-dev', { })
+mongoose.connect('mongodb://localhost/proglib-db', { })
 .then(() =>{
   console.log('Mongodb connected');
 })
