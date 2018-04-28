@@ -6,8 +6,11 @@ const methodOverride = require('method-override');
 const flash = require('connect-flash');
 const session = require('express-session');
 const bodyParser = require('body-parser');
-const passport = require('passport')
+const passport = require('passport');
 const mongoose = require('mongoose');
+const multer = require('multer');
+const GridFsStorage = require('multer-gridfs-storage');
+const Grid = require('gridfs-stream');
 
 const app = express();
 
@@ -28,7 +31,7 @@ require('./config/passport')(passport);
 mongoose.Promise = global.Promise
 
 // Connect to mongoose
-mongoose.connect('mongodb://localhost/proglib-db', { })
+const mongoURI = mongoose.connect('mongodb://localhost/proglib-db', { })
 .then(() =>{
   console.log('Mongodb connected');
 })
@@ -36,9 +39,12 @@ mongoose.connect('mongodb://localhost/proglib-db', { })
   console.log(err)
 });
 
+
+
 // Handlebars middleware
 app.engine('handlebars', exphbs({
-  defaultLayout: 'main'
+  defaultLayout: 'main',
+  adminpanel: 'admin'
 }));
 app.set('view engine', 'handlebars');
 
@@ -58,6 +64,8 @@ app.use(session({
   resave: true,
   saveUninitialized: true
 }));
+
+
 
 // Passport middleware
 app.use(passport.initialize());
@@ -100,6 +108,7 @@ app.get('/posts', (req, res) => {
 // Use routes
 app.use('/ideas', ideas) // это озночает что с файла ideas.js все пути будут начинатся так locallhost/ideas/и шо там оно напишет
 app.use('/users', users)
+
 
 const port = 5000;
 

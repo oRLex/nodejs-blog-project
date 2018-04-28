@@ -1,5 +1,9 @@
 const mongoose = require('mongoose');
 
+var multer = require('multer');
+
+var fs = require('fs');
+
 const Schema = mongoose.Schema;
 
 // Create Schema
@@ -11,6 +15,12 @@ const IdeaSchema = new Schema({
   details: {
     type: String,
     required: true
+  },
+  img:{
+    type: String
+  },
+  imgId:{
+    type: String
   },
   user: {
     type: String,

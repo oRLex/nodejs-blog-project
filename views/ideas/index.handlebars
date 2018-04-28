@@ -1,7 +1,10 @@
 {{#each ideas}}
 <div class="card card-body">
+  <h3>{{date}}</h3>
+  <img src="{{img}}" alt="" class="img-fluid" width="200px" height="200px">
   <h4>{{title}}</h4>
   <p>{{details}}</p>
+  
   <a class="btn btn-warning mb-2" href="/ideas/edit/{{id}}">Edit</a>
   <form action="/ideas/{{id}}?_method=DELETE" method="post">
     <input type="hidden" name="_method" value="DELETE">

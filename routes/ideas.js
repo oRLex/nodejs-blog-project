@@ -1,6 +1,35 @@
 const express = require('express');
 const mongoose = require('mongoose')
 const router = express.Router();
+const path = require('path');
+const multer = require('multer');
+const GridFsStorage = require('multer-gridfs-storage');
+const Grid = require('gridfs-stream');
+const fs = require('fs')
+const bodyParser = require('body-parser');
+const crypto = require('crypto');
+var storage = multer.diskStorage({
+  filename: function(req, file, callback) {
+    callback(null, Date.now() + file.originalname);
+  }
+});
+var imageFilter = function (req, file, cb) {
+    // accept image files only
+    if (!file.originalname.match(/\.(jpg|jpeg|png|gif)$/i)) {
+        return cb(new Error('Only image files are allowed!'), false);
+    }
+    cb(null, true);
+};
+var upload = multer({ storage: storage, fileFilter: imageFilter})
+
+var cloudinary = require('cloudinary');
+cloudinary.config({ 
+  cloud_name: 'dnhomnole', 
+  api_key: '273631371367265', 
+  api_secret: 'KbiY0_DhbSiSGLIu8XLYG4FyPq4'
+});
+
+
 const {ensureAuthenticated} = require('../helpers/auth')
 
 // Load Idea Model
@@ -22,7 +51,7 @@ router.get('/', ensureAuthenticated, (req, res) => {
 // Add Idea From
 router.get('/add', ensureAuthenticated, (req, res) => {
   res.render('ideas/add')
-})
+  })
 
 // Edit Idea From
 router.get('/edit/:id', (req, res) => {
@@ -43,8 +72,9 @@ router.get('/edit/:id', (req, res) => {
 
 
 
+
 // Proces From
-router.post('/', ensureAuthenticated, (req, res)=>{ 
+router.post('/',   ensureAuthenticated, upload.single('image'), (req, res)=>{ 
   let errors = []
 
   if(!req.body.title){ // это значит рекваирим.тело всего документа. name="title"
@@ -56,33 +86,55 @@ router.post('/', ensureAuthenticated, (req, res)=>{
   if(errors.length > 0){
     res.render('/add', {
       errors: errors,
-      title: req.body.title,
-      details: req.body.details
+      title: req.body.title
     })
   } else {
-    const newUser = {
-      title: req.body.title,
-      details: req.body.details,
-      user: req.user.id
-    }
-    new Idea(newUser)
-      .save()
-      .then(idea  => {
-        req.flash('success_msg', 'Item added');
-        res.redirect('/ideas')
-      })
+    cloudinary.uploader.upload(req.file.path, function(result) {
+      
+      req.body.img = result.secure_url;
+      req.body.imgId = result.public_id;
+      const newUser = {
+        title: req.body.title,
+        details: req.body.details,
+        img:  req.body.img,
+        imgId: req.body.imgId,
+        user: req.user.id,
+        date: req.body.date
+      }
+        new Idea(newUser)
+        .save()
+        .then(idea  => {
+          req.flash('success_msg', 'Item added');
+          res.redirect('/ideas')
+        })
+    });
   }
 })
 
 // Edit Form process
-router.put('/:id', ensureAuthenticated, (req, res) => {
-  Idea.findOne({
+router.put('/:id', ensureAuthenticated, upload.single('image'), (req, res) => {
+  
+  Idea.findById({
     _id: req.params.id
+  }, async function(req){
+    if (req.file.path){
+      try{
+        await  cloudinary.uploader.destroy(req.body.imgId)
+        let result = await cloudinary.uploader.upload(req.file.path);
+        req.body.imgId = result.public_id;
+        req.body.img = result.secure_url;    
+      } catch(err) {
+        req.flash('success_msg', 'Image Error', err.message);
+        return res.redirect('/ideas');
+    }
+  }
   })
   .then(idea => {
     // new values
     idea.title = req.body.title;
     idea.details = req.body.details;
+    idea.img = req.body.img;
+    idea.imgId = req.body.imgId;
 
     idea.save()
     .then(idea => {
@@ -90,6 +142,8 @@ router.put('/:id', ensureAuthenticated, (req, res) => {
       res.redirect('/ideas')
     })
   })
+   
+  
 });
 
 // Delete Idea
