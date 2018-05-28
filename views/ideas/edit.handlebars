@@ -1,3 +1,4 @@
+<div class="container mt-5">
 {{#each errors}}
   <div class="alert alert-danger">{{text}}</div>
 {{else}}
@@ -5,7 +6,7 @@
 {{/each}}
 
 <div class="card card-body">
-  <h3>Edit post Idea</h3>
+  <h3>Редагування</h3>
   <form action="/ideas/{{idea.id}}?_method=PUT" method="post" enctype="multipart/form-data">
   <input type="hidden" name="_method" value="PUT">
     <div class="form-group">
@@ -27,4 +28,5 @@
       </div>
     <button type="submit" class="btn btn-primary">Submit</button>
   </form>
+</div>
 </div>

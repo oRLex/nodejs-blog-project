@@ -1,0 +1,76 @@
+%btn 
+  font-size: 20px
+  // text-transform: uppercase
+  color: white
+  background: transparent
+  padding: 22px 26px
+  width: auto
+  margin: 0 auto
+  display: inline-block
+  font-weight: bold
+  cursor: pointer
+  text-align: center
+  transition: all 0.2s ease-in-out
+  transform: translateY(-3px)
+
+
+.btn-prime 
+  @extend %btn
+  background: $prime
+  font-family: $fontBase
+  font-weight: 300
+  line-height: 2.4rem
+  transition: 0.1s
+
+.btn-second 
+  @extend %btn
+  font-family: $fontBase
+  font-weight: 200
+  line-height: 0
+  transition: all 0.2s ease-in-out
+  border-radius: 6.1875rem
+  color: #fff
+  background-color: #377dff
+  border-color: #377dff
+  &:hover
+    box-shadow: 0 4px 17px rgba(55, 125, 255, 0.35)
+    color: #fff
+    background-color: #1164ff
+    border-color: #045cff
+
+
+.btn-submit
+  @extend %btn
+  background: $second
+  background: $prime
+  font-family: $fontBase
+  font-weight: 200
+  padding: 2rem 3rem
+  line-height: 0
+  transition: all 0.2s ease-in-out
+  &:hover
+    background: $primeShade
+
+
+.btn-small 
+  @extend %btn
+  font-family: $fontBase
+  font-weight: 500
+  line-height: 0
+  font-size: 15px
+  padding: 15px 15px
+  transition: all 0.2s ease-in-out
+  border-radius: 6.1875rem
+  transition: all 0.2s ease-in-out
+  color: #377dff
+  background: rgba(55, 125, 255, 0.1)
+  border-color: transparent
+  &:hover
+    color: #fff
+    background: #377dff
+    box-shadow: 0 4px 17px rgba(55, 125, 255, 0.35)
+
+
+.btn-large 
+  font-size: 1.8rem
+  padding: 1.9rem 5.1rem

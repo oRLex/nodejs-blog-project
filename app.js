@@ -39,10 +39,20 @@ const mongoURI = mongoose.connect('mongodb://localhost/proglib-db', { })
   console.log(err)
 });
 
-
+// Handlebars Heplpers
+const{
+  truncate,
+  stripTags,
+  formatDate
+} = require('./helpers/hbs');
 
 // Handlebars middleware
 app.engine('handlebars', exphbs({
+  helpers: {
+    truncate: truncate,
+    stripTags: stripTags,
+    formatDate: formatDate
+  },
   defaultLayout: 'main',
   adminpanel: 'admin'
 }));
@@ -91,6 +101,31 @@ app.get('/', (req, res)=>{
 // About Route
 app.get('/about', (req, res) => {
   res.render('about')
+})
+
+// Staff Route
+app.get('/staff', (req, res) => {
+  res.render('staff')
+})
+
+// Consultations Route
+app.get('/consultations', (req, res) => {
+  res.render('consultations')
+})
+
+// mentors Route
+app.get('/mentors', (req, res) => {
+  res.render('mentors')
+})
+
+// materials Route
+app.get('/materials', (req, res) => {
+  res.render('materials')
+})
+
+// contacts Route
+app.get('/contacts', (req, res) => {
+  res.render('contacts')
 })
 
 // Posts Route

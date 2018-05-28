@@ -48,6 +48,19 @@ router.get('/', ensureAuthenticated, (req, res) => {
   
 })
 
+// Show single story
+router.get('/show/:id', (req, res) => {
+  Idea.findOne({
+    _id: req.params.id
+  })
+  .populate('user')
+  .then(idea => {
+    res.render('ideas/show', {
+      idea: idea
+    })
+  })
+})
+
 // Add Idea From
 router.get('/add', ensureAuthenticated, (req, res) => {
   res.render('ideas/add')
@@ -90,7 +103,6 @@ router.post('/',   ensureAuthenticated, upload.single('image'), (req, res)=>{
     })
   } else {
     cloudinary.uploader.upload(req.file.path, function(result) {
-      
       req.body.img = result.secure_url;
       req.body.imgId = result.public_id;
       const newUser = {
@@ -112,17 +124,15 @@ router.post('/',   ensureAuthenticated, upload.single('image'), (req, res)=>{
 })
 
 // Edit Form process
-router.put('/:id', ensureAuthenticated, upload.single('image'), (req, res) => {
+router.put('/:id', ensureAuthenticated, upload.single('image'), async function(req, res) {
   
-  Idea.findById({
-    _id: req.params.id
-  }, async function(req){
+  Idea.findByIdAndUpdate({  _id: req.params.id  }, async function(req){
     if (req.file.path){
       try{
-        await  cloudinary.uploader.destroy(req.body.imgId)
-        let result = await cloudinary.uploader.upload(req.file.path);
+        await cloudinary.v2.uploader.destroy(req.body.imgId)
+        var result = await cloudinary.v2.uploader.upload(req.file.path);
+        req.body.img = result.secure_url;
         req.body.imgId = result.public_id;
-        req.body.img = result.secure_url;    
       } catch(err) {
         req.flash('success_msg', 'Image Error', err.message);
         return res.redirect('/ideas');
