@@ -759,6 +759,11 @@ p {
   left: 0;
 }
 
+#map {
+  height: 500px;
+  width: 100%;
+}
+
 @media (max-width: 575.98px) {
   .u-content-centered {
     display: none;

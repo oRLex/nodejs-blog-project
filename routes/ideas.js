@@ -73,7 +73,7 @@ router.get('/edit/:id', (req, res) => {
   })
   .then((idea) => {
     if (idea.user != req.user.id) {
-      req.flash('error_msg', 'Not Authorized')
+      req.flash('error_msg', 'Не авторизований')
       res.redirect('/ideas')
     } else{
       res.render('ideas/edit', {
@@ -91,10 +91,10 @@ router.post('/',   ensureAuthenticated, upload.single('image'), (req, res)=>{
   let errors = []
 
   if(!req.body.title){ // это значит рекваирим.тело всего документа. name="title"
-    errors.push({text: 'Please add a title'})
+    errors.push({text: 'Додайте заголовок'})
   }
   if(!req.body.details){ // это значит рекваирим.тело всего документа. name="detail"
-    errors.push({text: 'Please add a details'})
+    errors.push({text: 'Додайте текст'})
   }
   if(errors.length > 0){
     res.render('/add', {
@@ -150,16 +150,14 @@ router.put("/:id", ensureAuthenticated, upload.single('image'), function(req, re
                 idea.imgId = result.public_id;
                 idea.img = result.secure_url;
             } catch(err) {
-                req.flash('error_msg', 'barada2');
+                req.flash('error_msg', 'Збій обробника на стадії видалення картинки');
                 return res.redirect('/ideas');
             }
           }
-         
           idea.title = req.body.title;
           idea.details = req.body.details;
-
           idea.save();
-          req.flash('success_msg', 'Successfully Updated!');
+          req.flash('success_msg', 'Item updated');
           res.redirect('/ideas');
       }
   });
@@ -170,17 +168,17 @@ router.put("/:id", ensureAuthenticated, upload.single('image'), function(req, re
 router.delete('/:id', ensureAuthenticated, function(req, res) {
   Idea.findById(req.params.id, async function(err, idea) {
     if(err) {
-      req.flash('error_msg', 'Ne vidaliv');
+      req.flash('error_msg', 'Збій обробника на стадії видалення картинки');
       return res.redirect('/ideas');
     }
     try {
         await cloudinary.v2.uploader.destroy(idea.imgId);
         idea.remove();
-        req.flash('success_msg', 'Idea deleted successfully!');
+        req.flash('success_msg', 'Новина успішно видалена!');
         res.redirect('/ideas');
     } catch(err) {
         if(err) {
-          req.flash('error_msg', 'Ne vidaliv2');
+          req.flash('error_msg', 'Error');
           return res.redirect('/ideas');
         }
     }
