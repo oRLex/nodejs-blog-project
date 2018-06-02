@@ -123,49 +123,69 @@ router.post('/',   ensureAuthenticated, upload.single('image'), (req, res)=>{
   }
 })
 
-// Edit Form process
-router.put('/:id', ensureAuthenticated, upload.single('image'), async function(req, res) {
+// EDIT FORM
+router.put("/:id", ensureAuthenticated, upload.single('image'), function(req, res){
   
-  Idea.findByIdAndUpdate({  _id: req.params.id  }, async function(req){
-    if (req.file.path){
-      try{
-        await cloudinary.v2.uploader.destroy(req.body.imgId)
-        var result = await cloudinary.v2.uploader.upload(req.file.path);
-        req.body.img = result.secure_url;
-        req.body.imgId = result.public_id;
-      } catch(err) {
-        req.flash('success_msg', 'Image Error', err.message);
-        return res.redirect('/ideas');
-    }
-  }
-  })
-  .then(idea => {
-    // new values
-    idea.title = req.body.title;
-    idea.details = req.body.details;
-    idea.img = req.body.img;
-    idea.imgId = req.body.imgId;
 
-    idea.save()
-    .then(idea => {
-      req.flash('success_msg', 'Item updated');
-      res.redirect('/ideas')
-    })
-  })
-   
-  
+  Idea.findById(req.params.id, async function(err, idea){
+    let errors = []
+
+    if(!req.body.title){ // это значит рекваирим.тело всего документа. name="title"
+      errors.push({text: 'Please add a title'})
+    }
+    if(!req.body.details){ // это значит рекваирим.тело всего документа. name="detail"
+      errors.push({text: 'Please add a details'})
+    }
+    if(!req.file){ // это значит рекваирим.тело всего документа. name="detail"
+      errors.push({text: 'Please add image'})
+    }
+      if(err, errors.length > 0){
+          req.flash('error_msg', 'barada');
+          res.redirect('/ideas');
+      } else {
+          if (req.file) {
+            try {
+                await cloudinary.v2.uploader.destroy(idea.imgId);
+                var result = await cloudinary.v2.uploader.upload(req.file.path);
+                idea.imgId = result.public_id;
+                idea.img = result.secure_url;
+            } catch(err) {
+                req.flash('error_msg', 'barada2');
+                return res.redirect('/ideas');
+            }
+          }
+         
+          idea.title = req.body.title;
+          idea.details = req.body.details;
+
+          idea.save();
+          req.flash('success_msg', 'Successfully Updated!');
+          res.redirect('/ideas');
+      }
+  });
 });
 
-// Delete Idea
-router.delete('/:id', ensureAuthenticated, (req, res) => {
-  Idea.remove({_id: req.params.id})
-  .then(() => {
-    req.flash('success_msg', 'Item removed');
-    res.redirect('/ideas')
-  })
-})
 
-
+// Delete idea
+router.delete('/:id', ensureAuthenticated, function(req, res) {
+  Idea.findById(req.params.id, async function(err, idea) {
+    if(err) {
+      req.flash('error_msg', 'Ne vidaliv');
+      return res.redirect('/ideas');
+    }
+    try {
+        await cloudinary.v2.uploader.destroy(idea.imgId);
+        idea.remove();
+        req.flash('success_msg', 'Idea deleted successfully!');
+        res.redirect('/ideas');
+    } catch(err) {
+        if(err) {
+          req.flash('error_msg', 'Ne vidaliv2');
+          return res.redirect('/ideas');
+        }
+    }
+  });
+});
 
 
 module.exports = router;
