@@ -5,7 +5,6 @@
       <th scope="col">#</th>
       <th scope="col">Дата</th>
       <th scope="col">Заголовок</th>
-      <th scope="col">Текст</th>
       <th scope="col">Картинка</th>
       <th scope="col">Редагування</th>
     </tr>
@@ -14,9 +13,8 @@
 {{#each ideas}}
     <tr>
       <th scope="row">1</th>
-      <td>{{date}}</td>
+      <td>{{formatDate idea.date 'Do MMMM YYYY року'}}</td>
       <td>{{title}}</td>
-      <td>{{stripTags (truncate details 150)}}</td>
       <td><img src="{{img}}" alt="" class="img-fluid" width="50px" height="50px"></td>      
       <td><a class="btn btn-warning mb-2" href="/ideas/edit/{{id}}">Edit</a>
     <form action="/ideas/{{id}}?_method=DELETE" method="post">
@@ -24,22 +22,6 @@
       <input type="submit" class="btn btn-danger btn-block" value="Delete">
     </form></td>
     </tr>
-
-
-
-{{!-- <div class="card card-body">
-    <h3>{{date}}</h3>
-    <img src="{{img}}" alt="" class="img-fluid" width="200px" height="200px">
-    <h4>{{title}}</h4>
-    <p>{{stripTags (truncate details 150)}}</p>
-    
-    <a class="btn btn-warning mb-2" href="/ideas/edit/{{id}}">Edit</a>
-    <form action="/ideas/{{id}}?_method=DELETE" method="post">
-      <input type="hidden" name="_method" value="DELETE">
-      <input type="submit" class="btn btn-danger btn-block" value="Delete">
-    </form>
-</div>
-</div> --}}
 {{else}}
 <p>Немає новин</p>
 {{/each}}

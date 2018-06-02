@@ -12,7 +12,7 @@ module.exports = function(passport){
       email: email
     }).then(user => {
       if(!user) {
-        return done(null, false, {message: 'No user Found'}) 
+        return done(null, false, {message: 'Невірний Email та пароль'}) 
       }
 
       // Match password
@@ -21,7 +21,7 @@ module.exports = function(passport){
         if (isMatch) {
           return done(null, user)
         } else {
-          return done(null, false, {message: 'Password incorrect'}) 
+          return done(null, false, {message: 'Неправильний пароль'}) 
         }
       })
     })
