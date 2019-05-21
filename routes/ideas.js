@@ -3,11 +3,6 @@ const mongoose = require('mongoose')
 const router = express.Router();
 const path = require('path');
 const multer = require('multer');
-const GridFsStorage = require('multer-gridfs-storage');
-const Grid = require('gridfs-stream');
-const fs = require('fs')
-const bodyParser = require('body-parser');
-const crypto = require('crypto');
 var storage = multer.diskStorage({
   filename: function(req, file, callback) {
     callback(null, Date.now() + file.originalname);

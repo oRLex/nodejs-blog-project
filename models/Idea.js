@@ -1,8 +1,5 @@
 const mongoose = require('mongoose');
 
-var multer = require('multer');
-
-var fs = require('fs');
 
 const Schema = mongoose.Schema;
 
